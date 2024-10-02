@@ -58,27 +58,16 @@ pipeline {
             }
         }
     }
-    
 
- pipeline {
-    agent any
-    stages {
-        stage('Build') {
-            steps {
-                // Your build steps here
-                echo 'Building...'
-            }
-        }
-    }
-    post {
+   post {
         always {
-            emailext(
-                subject: "Build ${currentBuild.fullDisplayName}",
-                body: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) has finished",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'CulpritsRecipientProvider']],
-                to: 'your-email@example.com'
+            echo 'Sending email notification with log...'
+            emailext (
+                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
+                body: "Pipeline completed with status: ${currentBuild.currentResult}. Check attached log for details.",
+                to: 'medicala.sumedh.10@gmail.com',
+                attachLog: true
             )
         }
     }
 }
-
