@@ -62,11 +62,17 @@ pipeline {
     post {
         always {
             echo 'Triggering email notification...'
+            // Check if emailext plugin is configured properly in Jenkins.
             emailext (
                 subject: "Jenkins Pipeline Execution: ${currentBuild.fullDisplayName}",
-                body: "Pipeline finished with result: ${currentBuild.currentResult}",
+                body: """
+                    Jenkins Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) finished with status: ${currentBuild.currentResult}.
+                    
+                    Check the full console output here: ${env.BUILD_URL}console
+                """,
                 to: 'medicala.sumedh.10@gmail.com',
-                attachLog: true
+                attachLog: true,   // Attach the log as part of the email
+                compressLog: true  // Optional: compress the log to reduce size
             )
         }
     }
