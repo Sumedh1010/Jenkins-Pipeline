@@ -58,16 +58,19 @@ pipeline {
             }
         }
     }
+post {
+    always {
+        echo 'Sending email notifications...'
 
-    post {
-        always {
-            echo 'Sending email notifications...'
-            emailext (
-                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Pipeline completed with status: ${currentBuild.currentResult}",
-                to: 'medicala.sumedh.10@gmail.com',
-                attachLog: true
-            )
-        }
+        // Archive the console log as an artifact
+        archiveArtifacts artifacts: 'log.txt', allowEmptyArchive: true
+
+        emailext (
+            subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
+            body: "Pipeline completed with status: ${currentBuild.currentResult}",
+            to: 'medicala.sumedh.10@gmail.com',
+            attachmentsPattern: 'log.txt',  // Attach the log file
+            mimeType: 'text/plain'           // Set the MIME type for the attachment
+        )
     }
 }
