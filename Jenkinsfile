@@ -59,15 +59,15 @@ pipeline {
         }
     }
 
-   post {
-    always {
-        echo 'Sending email notifications...'
-        emailext (
-            subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-            body: "Pipeline completed with status: ${currentBuild.currentResult}",
-            to: 'medicala.sumedh.10@gmail.com',  
-            attachLog: true
-        )
+    post {
+        always {
+            echo 'Sending email notifications...'
+            emailext (
+                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
+                body: "Pipeline completed with status: ${currentBuild.currentResult}",
+                to: 'medicala.sumedh.10@gmail.com',
+                attachLog: true
+            )
+        }
     }
 }
-
