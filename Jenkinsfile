@@ -60,11 +60,18 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Sending email notifications...'
+    always {
+        echo 'Sending email notifications...'
+        script {
+            def logContent = currentBuild.getRawBuild().getLog(100) // Get last 100 lines of the build log
             emailext (
                 subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Pipeline completed with status: ${currentBuild.currentResult}",
+                body: """
+                Pipeline completed with status: ${currentBuild.currentResult}
+
+                Last 100 lines of log:
+                ${logContent}
+                """,
                 to: 'medicala.sumedh.10@gmail.com',
                 attachLog: true
             )
