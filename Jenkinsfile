@@ -2,77 +2,71 @@ pipeline {
     agent any
 
     stages {
-        stage('Compilation') {
+        stage('Build') {
             steps {
-                echo 'Compiling the project...'
+                echo 'Building the application...'
                 // Example for Java: sh 'mvn clean install'
-                echo 'Compilation completed using Maven.'
+                echo 'Build completed using Maven.'
             }
         }
 
-        stage('Testing') {
+        stage('Unit and Integration Tests') {
             steps {
-                echo 'Executing unit and integration tests...'
+                echo 'Running unit and integration tests...'
                 // Example for Java: sh 'mvn test'
-                echo 'Tests executed using JUnit.'
+                echo 'Tests completed using JUnit.'
             }
         }
 
-        stage('Static Code Analysis') {
+        stage('Code Analysis') {
             steps {
-                echo 'Running static code analysis...'
+                echo 'Performing code analysis...'
                 // Example: sh 'sonar-scanner'
-                echo 'Static code analysis completed using SonarQube.'
+                echo 'Code analysis completed using SonarQube.'
             }
         }
 
-        stage('Vulnerability Scan') {
+        stage('Security Scan') {
             steps {
-                echo 'Conducting security vulnerability scan...'
+                echo 'Performing security scan...'
                 // Example: sh 'dependency-check.sh'
-                echo 'Security vulnerability scan completed using OWASP Dependency-Check.'
+                echo 'Security scan completed using OWASP Dependency-Check.'
             }
         }
 
-        stage('Deploy to QA') {
+        stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to QA environment...'
-                // Example: sh 'scp target/myapp.war user@qa-server:/path/to/deploy/'
-                echo 'Deployment to QA environment completed.'
+                echo 'Deploying to Staging...'
+                // Example: sh 'scp target/myapp.war user@staging-server:/path/to/deploy/'
+                echo 'Deployment to Staging completed.'
             }
         }
 
-        stage('Validation Tests on QA') {
+        stage('Integration Tests on Staging') {
             steps {
-                echo 'Executing integration tests on QA environment...'
-                // Example: sh 'mvn verify -Pqa'
-                echo 'QA integration tests completed.'
+                echo 'Running integration tests on Staging...'
+                // Example: sh 'mvn verify -Pstaging'
+                echo 'Staging integration tests completed.'
             }
         }
 
-        stage('Production Deployment') {
+        stage('Deploy to Production') {
             steps {
-                echo 'Initiating deployment to Production...'
-                // Example: sh 'scp target/myapp.war user@prod-server:/path/to/deploy/'
-                echo 'Deployment to Production environment completed.'
+                echo 'Deploying to Production...'
+                // Example: sh 'scp target/myapp.war user@production-server:/path/to/deploy/'
+                echo 'Deployment to Production completed.'
             }
         }
     }
 
     post {
         always {
-            echo 'Triggering email notification...'
-            // Check if emailext plugin is configured properly in Jenkins.
+            echo 'Sending email notifications...'
             emailext (
-                subject: "Jenkins Pipeline Execution: ${currentBuild.fullDisplayName}",
-                body: """
-                    Jenkins Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) finished with status: ${currentBuild.currentResult}.
-                    
-                    Check the full console output here: ${env.BUILD_URL}console
-                """,
+                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
+                body: "Pipeline completed with status: ${currentBuild.currentResult}",
                 to: 'medicala.sumedh.10@gmail.com',
-                attachLog: true,   // Attach the log as part of the email
-                compressLog: true  // Optional: compress the log to reduce size
+                attachLog: true
             )
         }
     }
