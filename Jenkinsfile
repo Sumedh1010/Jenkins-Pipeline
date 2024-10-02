@@ -2,69 +2,69 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Compilation') {
             steps {
-                echo 'Building the application...'
+                echo 'Compiling the project...'
                 // Example for Java: sh 'mvn clean install'
-                echo 'Build completed using Maven.'
+                echo 'Compilation completed using Maven.'
             }
         }
 
-        stage('Unit and Integration Tests') {
+        stage('Testing') {
             steps {
-                echo 'Running unit and integration tests...'
+                echo 'Executing unit and integration tests...'
                 // Example for Java: sh 'mvn test'
-                echo 'Tests completed using JUnit.'
+                echo 'Tests executed using JUnit.'
             }
         }
 
-        stage('Code Analysis') {
+        stage('Static Code Analysis') {
             steps {
-                echo 'Performing code analysis...'
+                echo 'Running static code analysis...'
                 // Example: sh 'sonar-scanner'
-                echo 'Code analysis completed using SonarQube.'
+                echo 'Static code analysis completed using SonarQube.'
             }
         }
 
-        stage('Security Scan') {
+        stage('Vulnerability Scan') {
             steps {
-                echo 'Performing security scan...'
+                echo 'Conducting security vulnerability scan...'
                 // Example: sh 'dependency-check.sh'
-                echo 'Security scan completed using OWASP Dependency-Check.'
+                echo 'Security vulnerability scan completed using OWASP Dependency-Check.'
             }
         }
 
-        stage('Deploy to Staging') {
+        stage('Deploy to QA') {
             steps {
-                echo 'Deploying to Staging...'
-                // Example: sh 'scp target/myapp.war user@staging-server:/path/to/deploy/'
-                echo 'Deployment to Staging completed.'
+                echo 'Deploying to QA environment...'
+                // Example: sh 'scp target/myapp.war user@qa-server:/path/to/deploy/'
+                echo 'Deployment to QA environment completed.'
             }
         }
 
-        stage('Integration Tests on Staging') {
+        stage('Validation Tests on QA') {
             steps {
-                echo 'Running integration tests on Staging...'
-                // Example: sh 'mvn verify -Pstaging'
-                echo 'Staging integration tests completed.'
+                echo 'Executing integration tests on QA environment...'
+                // Example: sh 'mvn verify -Pqa'
+                echo 'QA integration tests completed.'
             }
         }
 
-        stage('Deploy to Production') {
+        stage('Production Deployment') {
             steps {
-                echo 'Deploying to Production...'
-                // Example: sh 'scp target/myapp.war user@production-server:/path/to/deploy/'
-                echo 'Deployment to Production completed.'
+                echo 'Initiating deployment to Production...'
+                // Example: sh 'scp target/myapp.war user@prod-server:/path/to/deploy/'
+                echo 'Deployment to Production environment completed.'
             }
         }
     }
 
     post {
         always {
-            echo 'Sending email notifications...'
+            echo 'Triggering email notification...'
             emailext (
-                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Pipeline completed with status: ${currentBuild.currentResult}",
+                subject: "Jenkins Pipeline Execution: ${currentBuild.fullDisplayName}",
+                body: "Pipeline finished with result: ${currentBuild.currentResult}",
                 to: 'medicala.sumedh.10@gmail.com',
                 attachLog: true
             )
