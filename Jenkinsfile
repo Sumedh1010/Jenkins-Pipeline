@@ -62,25 +62,14 @@ pipeline {
    post {
     always {
         echo 'Sending email notifications...'
-        script {
-            try {
-                // Get the last 100 lines of the log for debugging
-                def logContent = currentBuild.rawBuild.getLog(100).join("\n")
-                
-                emailext (
-                    subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-                    body: """
-                    Pipeline completed with status: ${currentBuild.currentResult}
-                    
-                    Last 100 lines of log:
-                    ${logContent}
-                    """,
-                    to: 'medicala.sumedh.10@gmail.com',
-                    attachLog: true
-                )
-            } catch (Exception e) {
-                echo "Error while sending email: ${e}"
-            }
-        }
+        emailext (
+            subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
+            body: """
+                Pipeline completed with status: ${currentBuild.currentResult}.
+                Check attached log for details.
+            """,
+            to: 'medicala.sumedh.10@gmail.com',
+            attachLog: true  // Attach the full log automatically
+        )
     }
 }
