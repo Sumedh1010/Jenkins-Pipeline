@@ -1,74 +1,79 @@
 pipeline {
     agent any
 
+    environment {
+        EMAIL_RECIPIENT = ‘medicala.sumedh.10@gmail.com'
+    }
+
     stages {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                // Example for Java: sh 'mvn clean install'
-                echo 'Build completed using Maven.'
             }
         }
-
+        
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit and integration tests...'
-                // Example for Java: sh 'mvn test'
-                echo 'Tests completed using JUnit.'
+                echo 'Running Unit Tests and Integration Tests...'
+            }
+            post {
+                always {
+                    mail to: "${env.EMAIL_RECIPIENT}",
+                         subject: "Unit and Integration Test Stage: ${currentBuild.currentResult}",
+                         body: "The Unit and Integration Test stage has ${currentBuild.currentResult}. Please find the attached logs.",
+                         attachLog: true
+                }
             }
         }
-
+        
         stage('Code Analysis') {
             steps {
-                echo 'Performing code analysis...'
-                // Example: sh 'sonar-scanner'
-                echo 'Code analysis completed using SonarQube.'
+                echo 'Analyzing the code...'
             }
         }
-
+        
         stage('Security Scan') {
             steps {
                 echo 'Performing security scan...'
-                // Example: sh 'dependency-check.sh'
-                echo 'Security scan completed using OWASP Dependency-Check.'
+            }
+            post {
+                always {
+                    mail to: "${env.EMAIL_RECIPIENT}",
+                         subject: "Security Scan Stage: ${currentBuild.currentResult}",
+                         body: "The Security Scan stage has ${currentBuild.currentResult}. Please find the attached logs.",
+                         attachLog: true
+                }
             }
         }
-
+        
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
-                // Example: sh 'scp target/myapp.war user@staging-server:/path/to/deploy/'
-                echo 'Deployment to Staging completed.'
             }
         }
-
+        
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on Staging...'
-                // Example: sh 'mvn verify -Pstaging'
-                echo 'Staging integration tests completed.'
+                echo 'Running integration tests on staging...'
             }
         }
-
+        
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to Production...'
-                // Example: sh 'scp target/myapp.war user@production-server:/path/to/deploy/'
-                echo 'Deployment to Production completed.'
             }
         }
     }
-
-     post {
+    
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
         always {
-            echo 'Sending email notifications...'
-            emailext (
-                subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-                body: "Pipeline completed with status: ${currentBuild.currentResult}",
-                to: 'medicala.sumedh.10@gmail.com',
-                attachLog: true
-            )
+            cleanWs() 
         }
     }
 }
-
