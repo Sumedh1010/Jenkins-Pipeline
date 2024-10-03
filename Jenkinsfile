@@ -2,84 +2,88 @@ pipeline {
     agent any
 
     environment {
-        EMAIL = 'medicala.sumedh@gmail.com'
+        EMAIL_RECIPIENT = 'medicala.sumedh@gmail.com'
     }
 
     stages {
-        stage('Build Stage') {
+        stage('Build') {
             steps {
-                echo 'Starting the build process...'
+                echo 'Initiating the build process...'
             }
         }
         
-        stage('Test Execution') {
+        stage('Run Tests') {
             steps {
-                echo 'Running Unit Tests and Integration Tests...'
+                echo 'Executing Unit Tests and Integration Tests...'
             }
             post {
                 always {
-                    emailext to: "${env.EMAIL}",
-                             subject: "Test Result: Unit and Integration - ${currentBuild.currentResult}",
-                             body: """The result of Unit and Integration Tests is: ${currentBuild.currentResult}.
-                                      Build URL: ${env.BUILD_URL}
-                                      Please check the attached logs for details.""",
-                             attachLog: true,
-                             compressLog: true // Compress the log if too large
+                    emailext(
+                        to: "${env.EMAIL_RECIPIENT}",
+                        subject: "Test Results: Unit and Integration - ${currentBuild.currentResult}",
+                        body: """Unit and Integration Test results: ${currentBuild.currentResult}.
+                                 View more details here: ${env.BUILD_URL}.
+                                 Check the attached logs for further information.""",
+                        attachLog: true,
+                        compressLog: true
+                    )
                 }
             }
         }
         
-        stage('Code Quality Check') {
+        stage('Code Quality Analysis') {
             steps {
-                echo 'Running code quality analysis...'
+                echo 'Analyzing code quality...'
             }
         }
         
-        stage('Security Check') {
+        stage('Security Scan') {
             steps {
-                echo 'Performing security checks...'
+                echo 'Conducting security scans...'
             }
             post {
                 always {
-                    emailext to: "${env.EMAIL}",
-                             subject: "Security Check Result: ${currentBuild.currentResult}",
-                             body: """The Security Check stage ended with: ${currentBuild.currentResult}.
-                                      Build URL: ${env.BUILD_URL}
-                                      Logs are attached.""",
-                             attachLog: true,
-                             compressLog: true // Compress the log
+                    emailext(
+                        to: "${env.EMAIL_RECIPIENT}",
+                        subject: "Security Scan Results: ${currentBuild.currentResult}",
+                        body: """The security check finished with status: ${currentBuild.currentResult}.
+                                 Build details: ${env.BUILD_URL}.
+                                 Please find the logs attached.""",
+                        attachLog: true,
+                        compressLog: true
+                    )
                 }
             }
         }
         
-        stage('Deploy to Staging') {
+        stage('Deploy to Staging Environment') {
             steps {
-                echo 'Deploying to staging environment...'
+                echo 'Deploying application to the staging environment...'
             }
         }
         
-        stage('Staging Tests') {
+        stage('Test in Staging') {
             steps {
-                echo 'Running checks and integration tests on the staging setup'
+                echo 'Executing tests in the staging environment...'
             }
         }
         
         stage('Deploy to Production') {
             steps {
-                echo 'Starting deployment process to the production environment...'
+                echo 'Deploying to the production environment...'
             }
         }
     }
     
     post {
         success {
-            echo 'Success!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Failed!'
+            echo 'Pipeline execution failed.'
         }
         always {
-            cleanWs() 
+            cleanWs() // Clean up workspace after execution
         }
     }
 }
