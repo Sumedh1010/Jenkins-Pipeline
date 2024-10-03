@@ -20,8 +20,11 @@ pipeline {
                 always {
                     emailext to: "${env.EMAIL}",
                              subject: "Test Result: Unit and Integration - ${currentBuild.currentResult}",
-                             body: "The result of Unit and Integration Tests is: ${currentBuild.currentResult}. Please check the attached logs for details.",
-                             attachLog: true
+                             body: """The result of Unit and Integration Tests is: ${currentBuild.currentResult}.
+                                      Build URL: ${env.BUILD_URL}
+                                      Please check the attached logs for details.""",
+                             attachLog: true,
+                             compressLog: true // Compress the log if too large
                 }
             }
         }
@@ -40,8 +43,11 @@ pipeline {
                 always {
                     emailext to: "${env.EMAIL}",
                              subject: "Security Check Result: ${currentBuild.currentResult}",
-                             body: "The Security Check stage ended with: ${currentBuild.currentResult}. Logs are attached.",
-                             attachLog: true
+                             body: """The Security Check stage ended with: ${currentBuild.currentResult}.
+                                      Build URL: ${env.BUILD_URL}
+                                      Logs are attached.""",
+                             attachLog: true,
+                             compressLog: true // Compress the log
                 }
             }
         }
