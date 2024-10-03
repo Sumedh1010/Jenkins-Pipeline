@@ -2,77 +2,78 @@ pipeline {
     agent any
 
     environment {
-        EMAIL_RECIPIENT = ‘medicala.sumedh.10@gmail.com'
+        EMAIL = 'medicala.sumedh.10@gmail.com'
     }
 
     stages {
-        stage('Build') {
+        stage('Build Stage') {
             steps {
-                echo 'Building the application...'
+                echo 'Starting the build process...'
             }
         }
         
-        stage('Unit and Integration Tests') {
+        stage('Test Execution') {
             steps {
                 echo 'Running Unit Tests and Integration Tests...'
             }
             post {
                 always {
-                    mail to: "${env.EMAIL_RECIPIENT}",
-                         subject: "Unit and Integration Test Stage: ${currentBuild.currentResult}",
-                         body: "The Unit and Integration Test stage has ${currentBuild.currentResult}. Please find the attached logs.",
-                         attachLog: true
+                    emailext to: "${env.EMAIL}",
+                             subject: "Test Result: Unit and Integration - ${currentBuild.currentResult}",
+                             body: "The result of Unit and Integration Tests is: ${currentBuild.currentResult}. Please check the attached logs for details.",
+                             attachLog: true
                 }
             }
         }
         
-        stage('Code Analysis') {
+        stage('Code Quality Check') {
             steps {
-                echo 'Analyzing the code...'
+                echo 'Running code quality analysis...'
             }
         }
         
-        stage('Security Scan') {
+        stage('Security Check') {
             steps {
-                echo 'Performing security scan...'
+                echo 'Performing security checks...'
             }
             post {
                 always {
-                    mail to: "${env.EMAIL_RECIPIENT}",
-                         subject: "Security Scan Stage: ${currentBuild.currentResult}",
-                         body: "The Security Scan stage has ${currentBuild.currentResult}. Please find the attached logs.",
-                         attachLog: true
+                    emailext to: "${env.EMAIL}",
+                             subject: "Security Check Result: ${currentBuild.currentResult}",
+                             body: "The Security Check stage ended with: ${currentBuild.currentResult}. Logs are attached.",
+                             attachLog: true
                 }
             }
         }
         
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
+                echo 'Deploying to staging environment...'
             }
         }
         
-        stage('Integration Tests on Staging') {
+        stage('Staging Tests') {
             steps {
-                echo 'Running integration tests on staging...'
+                echo 'Running checks and integration tests on the staging setup'
             }
         }
         
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
+                echo 'Starting deployment process to the production environment...'
             }
         }
     }
     
     post {
-    always {
-        echo 'Sending basic email notification...'
-        emailext (
-            subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
-            body: """<p>Pipeline completed with status: ${currentBuild.currentResult}</p>
-                     <p>Build URL: ${env.BUILD_URL}</p>""",
-            to: 'medicala.sumedh.10@gmail.com'  // Replaced curly quotes with straight quotes
-        )
+        success {
+            echo 'Success!'
+        }
+        failure {
+            echo 'Failed!'
+        }
+        always {
+            cleanWs() 
+        }
     }
 }
