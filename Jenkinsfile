@@ -66,14 +66,13 @@ pipeline {
     }
     
     post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-        always {
-            cleanWs() 
-        }
+    always {
+        echo 'Sending basic email notification...'
+        emailext (
+            subject: "Jenkins Pipeline: ${currentBuild.fullDisplayName}",
+            body: """<p>Pipeline completed with status: ${currentBuild.currentResult}</p>
+                     <p>Build URL: ${env.BUILD_URL}</p>""",
+            to: 'medicala.sumedh.10@gmail.com'  // Replaced curly quotes with straight quotes
+        )
     }
 }
